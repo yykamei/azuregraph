@@ -35,7 +35,7 @@ func TestNewDispatcher(t *testing.T) {
 		t.Errorf("UserGet() failed: %s", err)
 		return
 	}
-	if _, err = dispatcher.UserList(); err != nil {
+	if _, err = dispatcher.UserList(nil); err != nil {
 		t.Errorf("UserList() failed: %s", err)
 		return
 	}

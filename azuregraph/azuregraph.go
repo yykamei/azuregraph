@@ -179,3 +179,30 @@ type SignInName struct {
 	Type  string `json:"type"`
 	Value string `json:"value"`
 }
+
+// OdataQuery FIXME
+type OdataQuery struct {
+	Filter  string
+	Top     int
+	OrderBy string
+	Expand  string
+	Format  string
+}
+
+func (o *OdataQuery) setQuery(values *url.Values) {
+	if o.Filter != "" {
+		values.Set("$filter", o.Filter)
+	}
+	if o.Top > 0 {
+		values.Set("$top", fmt.Sprintf("%d", o.Top))
+	}
+	if o.OrderBy != "" {
+		values.Set("$orderby", o.OrderBy)
+	}
+	if o.Expand != "" {
+		values.Set("$expand", o.Expand)
+	}
+	if o.Format != "" {
+		values.Set("$format", o.Format)
+	}
+}

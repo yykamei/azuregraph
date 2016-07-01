@@ -5,11 +5,11 @@ import "encoding/json"
 // GroupGet gets a specified group. Specify the group by its object ID (GUID).
 func (d *Dispatcher) GroupGet(objectID string) (*Group, error) {
 	var group Group
-	u, err := d.getEndpoint("group", objectID)
+	endpoint, err := d.getEndpoint("group", objectID)
 	if err != nil {
 		return nil, err
 	}
-	buf, err := d.dispatch("GET", u, nil)
+	buf, err := d.dispatch("GET", endpoint, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -21,15 +21,18 @@ func (d *Dispatcher) GroupGet(objectID string) (*Group, error) {
 
 // GroupList gets groups. You can add query parameters to the request to filter,
 // sort and page the response.
-func (d *Dispatcher) GroupList(filter ...string) (*[]Group, error) {
+func (d *Dispatcher) GroupList(query *OdataQuery) (*[]Group, error) {
 	var groups struct {
 		Value []Group `json:"value"`
 	}
-	u, err := d.getEndpoint("group")
+	endpoint, err := d.getEndpoint("group")
 	if err != nil {
 		return nil, err
 	}
-	buf, err := d.dispatch("GET", u, nil)
+	values := endpoint.Query()
+	query.setQuery(&values)
+	endpoint.RawQuery = values.Encode()
+	buf, err := d.dispatch("GET", endpoint, nil)
 	if err != nil {
 		return nil, err
 	}

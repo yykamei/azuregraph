@@ -6,11 +6,11 @@ import "encoding/json"
 // the user principal name (UPN) to identify the target user
 func (d *Dispatcher) UserGet(userID string) (*User, error) {
 	var user User
-	u, err := d.getEndpoint("user", userID)
+	endpoint, err := d.getEndpoint("user", userID)
 	if err != nil {
 		return nil, err
 	}
-	buf, err := d.dispatch("GET", u, nil)
+	buf, err := d.dispatch("GET", endpoint, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -22,15 +22,18 @@ func (d *Dispatcher) UserGet(userID string) (*User, error) {
 
 // UserList gets users. You can add query parameters to the request to filter,
 // sort and page the response.
-func (d *Dispatcher) UserList(filter ...string) (*[]User, error) {
+func (d *Dispatcher) UserList(query *OdataQuery) (*[]User, error) {
 	var users struct {
 		Value []User `json:"value"`
 	}
-	u, err := d.getEndpoint("user")
+	endpoint, err := d.getEndpoint("user")
 	if err != nil {
 		return nil, err
 	}
-	buf, err := d.dispatch("GET", u, nil)
+	values := endpoint.Query()
+	query.setQuery(&values)
+	endpoint.RawQuery = values.Encode()
+	buf, err := d.dispatch("GET", endpoint, nil)
 	if err != nil {
 		return nil, err
 	}
