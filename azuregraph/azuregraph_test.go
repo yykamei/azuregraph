@@ -1,7 +1,6 @@
 package azuregraph
 
 import (
-	"fmt"
 	"os"
 	"testing"
 
@@ -36,10 +35,8 @@ func TestNewDispatcher(t *testing.T) {
 		t.Errorf("UserGet() failed: %s", err)
 		return
 	}
-	users, err := dispatcher.UserList()
-	if err != nil {
+	if _, err = dispatcher.UserList(); err != nil {
 		t.Errorf("UserList() failed: %s", err)
 		return
 	}
-	fmt.Println(users)
 }
