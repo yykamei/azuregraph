@@ -2,7 +2,6 @@ package azuregraph
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/url"
 )
 
@@ -43,7 +42,6 @@ func (d *Dispatcher) GroupList(query *OdataQuery) (*[]Group, *string, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	fmt.Println(string(buf))
 	if err := json.Unmarshal(buf, &groups); err != nil {
 		return nil, nil, err
 	}

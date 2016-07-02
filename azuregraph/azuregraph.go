@@ -182,11 +182,12 @@ type SignInName struct {
 
 // OdataQuery FIXME
 type OdataQuery struct {
-	Filter  string
-	Top     int
-	OrderBy string
-	Expand  string
-	Format  string
+	Filter    string
+	Top       int
+	OrderBy   string
+	Expand    string
+	Format    string
+	SkipToken string
 }
 
 func (o *OdataQuery) setQuery(values *url.Values) {
@@ -204,5 +205,8 @@ func (o *OdataQuery) setQuery(values *url.Values) {
 	}
 	if o.Format != "" {
 		values.Set("$format", o.Format)
+	}
+	if o.SkipToken != "" {
+		values.Set("$skiptoken", o.SkipToken)
 	}
 }
