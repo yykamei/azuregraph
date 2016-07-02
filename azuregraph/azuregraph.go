@@ -83,6 +83,21 @@ func (d *Dispatcher) dispatch(method string, requestURL *url.URL, body io.Reader
 	return buf, nil
 }
 
+func (d *Dispatcher) get(id string, resource Resource) error {
+	endpoint, err := d.getEndpoint(resource.resourceName(), id)
+	if err != nil {
+		return err
+	}
+	buf, err := d.dispatch("GET", endpoint, nil)
+	if err != nil {
+		return err
+	}
+	if err := json.Unmarshal(buf, &resource); err != nil {
+		return err
+	}
+	return nil
+}
+
 // TokenInfo is Token data sent by Azure AD.
 // This includes OAuth2 AccessToken.
 type TokenInfo struct {
@@ -209,4 +224,9 @@ func (o *OdataQuery) setQuery(values *url.Values) {
 	if o.SkipToken != "" {
 		values.Set("$skiptoken", o.SkipToken)
 	}
+}
+
+// Resource represents resource interface
+type Resource interface {
+	resourceName() string
 }

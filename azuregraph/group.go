@@ -8,15 +8,7 @@ import (
 // GroupGet gets a specified group. Specify the group by its object ID (GUID).
 func (d *Dispatcher) GroupGet(objectID string) (*Group, error) {
 	var group Group
-	endpoint, err := d.getEndpoint("group", objectID)
-	if err != nil {
-		return nil, err
-	}
-	buf, err := d.dispatch("GET", endpoint, nil)
-	if err != nil {
-		return nil, err
-	}
-	if err := json.Unmarshal(buf, &group); err != nil {
+	if err := d.get(objectID, &group); err != nil {
 		return nil, err
 	}
 	return &group, nil
@@ -72,4 +64,8 @@ type Group struct {
 	ProvisioningErrors           []ProvisioningError `json:"provisioningErrors"`
 	ProxyAddresses               []string            `json:"proxyAddresses"`
 	SecurityEnabled              bool                `json:"securityEnabled"`
+}
+
+func (group *Group) resourceName() string {
+	return "group"
 }

@@ -9,15 +9,7 @@ import (
 // the user principal name (UPN) to identify the target user
 func (d *Dispatcher) UserGet(userID string) (*User, error) {
 	var user User
-	endpoint, err := d.getEndpoint("user", userID)
-	if err != nil {
-		return nil, err
-	}
-	buf, err := d.dispatch("GET", endpoint, nil)
-	if err != nil {
-		return nil, err
-	}
-	if err := json.Unmarshal(buf, &user); err != nil {
+	if err := d.get(userID, &user); err != nil {
 		return nil, err
 	}
 	return &user, nil
@@ -99,4 +91,8 @@ type User struct {
 	UsageLocation                string              `json:"usageLocation"`
 	UserPrincipalName            string              `json:"userPrincipalName"`
 	UserType                     string              `json:"userType"`
+}
+
+func (user *User) resourceName() string {
+	return "user"
 }
