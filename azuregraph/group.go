@@ -1,6 +1,10 @@
 package azuregraph
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+	"net/url"
+)
 
 // GroupGet gets a specified group. Specify the group by its object ID (GUID).
 func (d *Dispatcher) GroupGet(objectID string) (*Group, error) {
@@ -21,25 +25,37 @@ func (d *Dispatcher) GroupGet(objectID string) (*Group, error) {
 
 // GroupList gets groups. You can add query parameters to the request to filter,
 // sort and page the response.
-func (d *Dispatcher) GroupList(query *OdataQuery) (*[]Group, error) {
+func (d *Dispatcher) GroupList(query *OdataQuery) (*[]Group, *string, error) {
 	var groups struct {
-		Value []Group `json:"value"`
+		NextLink string  `json:"odata.nextLink"`
+		Value    []Group `json:"value"`
 	}
 	endpoint, err := d.getEndpoint("group")
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	values := endpoint.Query()
-	query.setQuery(&values)
-	endpoint.RawQuery = values.Encode()
+	if query != nil {
+		query.setQuery(&values)
+		endpoint.RawQuery = values.Encode()
+	}
 	buf, err := d.dispatch("GET", endpoint, nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
+	fmt.Println(string(buf))
 	if err := json.Unmarshal(buf, &groups); err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return &groups.Value, nil
+	if groups.NextLink != "" {
+		nextLinkURL, err := url.Parse(groups.NextLink)
+		if err != nil {
+			return nil, nil, err
+		}
+		skiptoken := nextLinkURL.Query().Get("$skiptoken")
+		return &groups.Value, &skiptoken, nil
+	}
+	return &groups.Value, nil, nil
 }
 
 // Group FIXME
