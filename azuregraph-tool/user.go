@@ -82,6 +82,13 @@ func registerUserList(cmd *kingpin.CmdClause) {
 			return err
 		}
 		fmt.Printf("%s\n", string(buf))
+		if skiptoken != nil {
+			fmt.Println()
+			fmt.Println("If you want to get a next page, you can specify following the skiptoken flag.")
+			fmt.Println("You must quote it with double quotes characters.")
+			fmt.Println()
+			fmt.Printf("%#v\n", *skiptoken)
+		}
 		return nil
 	})
 }
