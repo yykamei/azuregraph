@@ -1,10 +1,5 @@
 package azuregraph
 
-import (
-	"encoding/json"
-	"net/url"
-)
-
 // UserGet gets a specified user. You can use either the object ID (GUID) or
 // the user principal name (UPN) to identify the target user
 func (d *Dispatcher) UserGet(userID string) (*User, error) {
@@ -18,33 +13,11 @@ func (d *Dispatcher) UserGet(userID string) (*User, error) {
 // UserList gets users. You can add query parameters to the request to filter,
 // sort and page the response.
 func (d *Dispatcher) UserList(query *OdataQuery) (*[]User, *string, error) {
-	var users struct {
-		NextLink string `json:"odata.nextLink"`
-		Value    []User `json:"value"`
-	}
-	endpoint, err := d.getEndpoint("user")
-	if err != nil {
+	var users Users
+	if skiptoken, err := d.list(query, &users); err != nil {
 		return nil, nil, err
-	}
-	values := endpoint.Query()
-	if query != nil {
-		query.setQuery(&values)
-		endpoint.RawQuery = values.Encode()
-	}
-	buf, err := d.dispatch("GET", endpoint, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-	if err := json.Unmarshal(buf, &users); err != nil {
-		return nil, nil, err
-	}
-	if users.NextLink != "" {
-		nextLinkURL, err := url.Parse(users.NextLink)
-		if err != nil {
-			return nil, nil, err
-		}
-		skiptoken := nextLinkURL.Query().Get("$skiptoken")
-		return &users.Value, &skiptoken, nil
+	} else if skiptoken != nil {
+		return &users.Value, skiptoken, nil
 	}
 	return &users.Value, nil, nil
 }
@@ -95,4 +68,18 @@ type User struct {
 
 func (user *User) resourceName() string {
 	return "user"
+}
+
+// Users represents collection of groups.
+type Users struct {
+	NextLink string `json:"odata.nextLink"`
+	Value    []User `json:"value"`
+}
+
+func (users *Users) resourceName() string {
+	return "user"
+}
+
+func (users *Users) nextLink() string {
+	return users.NextLink
 }

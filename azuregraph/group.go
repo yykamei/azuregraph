@@ -1,10 +1,5 @@
 package azuregraph
 
-import (
-	"encoding/json"
-	"net/url"
-)
-
 // GroupGet gets a specified group. Specify the group by its object ID (GUID).
 func (d *Dispatcher) GroupGet(objectID string) (*Group, error) {
 	var group Group
@@ -17,33 +12,11 @@ func (d *Dispatcher) GroupGet(objectID string) (*Group, error) {
 // GroupList gets groups. You can add query parameters to the request to filter,
 // sort and page the response.
 func (d *Dispatcher) GroupList(query *OdataQuery) (*[]Group, *string, error) {
-	var groups struct {
-		NextLink string  `json:"odata.nextLink"`
-		Value    []Group `json:"value"`
-	}
-	endpoint, err := d.getEndpoint("group")
-	if err != nil {
+	var groups Groups
+	if skiptoken, err := d.list(query, &groups); err != nil {
 		return nil, nil, err
-	}
-	values := endpoint.Query()
-	if query != nil {
-		query.setQuery(&values)
-		endpoint.RawQuery = values.Encode()
-	}
-	buf, err := d.dispatch("GET", endpoint, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-	if err := json.Unmarshal(buf, &groups); err != nil {
-		return nil, nil, err
-	}
-	if groups.NextLink != "" {
-		nextLinkURL, err := url.Parse(groups.NextLink)
-		if err != nil {
-			return nil, nil, err
-		}
-		skiptoken := nextLinkURL.Query().Get("$skiptoken")
-		return &groups.Value, &skiptoken, nil
+	} else if skiptoken != nil {
+		return &groups.Value, skiptoken, nil
 	}
 	return &groups.Value, nil, nil
 }
@@ -68,4 +41,18 @@ type Group struct {
 
 func (group *Group) resourceName() string {
 	return "group"
+}
+
+// Groups represents collection of groups.
+type Groups struct {
+	NextLink string  `json:"odata.nextLink"`
+	Value    []Group `json:"value"`
+}
+
+func (groups *Groups) resourceName() string {
+	return "group"
+}
+
+func (groups *Groups) nextLink() string {
+	return groups.NextLink
 }

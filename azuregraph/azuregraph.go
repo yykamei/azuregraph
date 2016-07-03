@@ -98,6 +98,34 @@ func (d *Dispatcher) get(id string, resource Resource) error {
 	return nil
 }
 
+func (d *Dispatcher) list(query *OdataQuery, resources Resources) (*string, error) {
+	endpoint, err := d.getEndpoint(resources.resourceName())
+	if err != nil {
+		return nil, err
+	}
+	values := endpoint.Query()
+	if query != nil {
+		query.setQuery(&values)
+		endpoint.RawQuery = values.Encode()
+	}
+	buf, err := d.dispatch("GET", endpoint, nil)
+	if err != nil {
+		return nil, err
+	}
+	if err := json.Unmarshal(buf, &resources); err != nil {
+		return nil, err
+	}
+	if resources.nextLink() != "" {
+		nextLinkURL, err := url.Parse(resources.nextLink())
+		if err != nil {
+			return nil, err
+		}
+		skiptoken := nextLinkURL.Query().Get("$skiptoken")
+		return &skiptoken, nil
+	}
+	return nil, nil
+}
+
 // TokenInfo is Token data sent by Azure AD.
 // This includes OAuth2 AccessToken.
 type TokenInfo struct {
@@ -229,4 +257,10 @@ func (o *OdataQuery) setQuery(values *url.Values) {
 // Resource represents resource interface
 type Resource interface {
 	resourceName() string
+}
+
+// Resources represents resource interface
+type Resources interface {
+	resourceName() string
+	nextLink() string
 }
