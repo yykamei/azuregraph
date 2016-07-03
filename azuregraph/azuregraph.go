@@ -45,6 +45,10 @@ func (d *Dispatcher) getEndpoint(resourceType string, paths ...string) (*url.URL
 		resourceType = "users"
 	case "group":
 		resourceType = "groups"
+	case "directoryRole":
+		resourceType = "directoryRoles"
+	case "subscribedSku":
+		resourceType = "subscribedSkus"
 	default:
 		return nil, errors.New("Undefined resource type")
 	}

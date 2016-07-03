@@ -47,5 +47,6 @@ func createDispatcher() *azuregraph.Dispatcher {
 func main() {
 	registerUser(app)
 	registerGroup(app)
+	registerSubscribedSku(app)
 	kingpin.MustParse(app.Parse(os.Args[1:]))
 }

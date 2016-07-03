@@ -70,7 +70,7 @@ func (user *User) resourceName() string {
 	return "user"
 }
 
-// Users represents collection of groups.
+// Users represents collection of users.
 type Users struct {
 	NextLink string `json:"odata.nextLink"`
 	Value    []User `json:"value"`
