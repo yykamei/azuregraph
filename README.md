@@ -7,7 +7,7 @@
 ## Preparation
 
 Firstly, you must set up to use Azure AD Graph API.
-See https://github.com/Azure-Samples/active-directory-dotnet-graphapi-console .
+See Step 3 of https://github.com/Azure-Samples/active-directory-dotnet-graphapi-console .
 
 ## Usage
 
