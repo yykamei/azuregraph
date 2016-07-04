@@ -1,5 +1,8 @@
 # Azure AD Graph API Tool
 
+azuregraph-tool dispatches Azure AD Graph API.
+This supports api-version *1.6*, and only GET APIs are supported.
+
 ## Installation
 
     $ git clone https://github.com/yykamei/azuregraph /path/to/azuregraph
