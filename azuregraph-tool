@@ -10,6 +10,10 @@ try:
 except ImportError:
     from ConfigParser import ConfigParser
 try:
+    from urllib.parse import urlparse, parse_qs
+except ImportError:
+    from urlparse import urlparse, parse_qs
+try:
     from urllib.parse import urlencode, quote
 except ImportError:
     from urllib import urlencode, quote
@@ -93,8 +97,17 @@ class AzureConnector(object):
             sys.exit(1)
         obj = json.loads(response.read().decode('utf-8'))  # charset=utf-8
         # obj has 'value' key
-        # FIXME: skiptoken
-        sys.stdout.write('%s\n' % (json.dumps(obj['value'], indent=2, ensure_ascii=False),))
+        sys.stdout.write('%s\n' % (json.dumps(obj[u'value'], indent=2, ensure_ascii=False),))
+        # If $skiptoken exists, we can get next page.
+        if u'odata.nextLink' in obj:
+            skiptoken = parse_qs(urlparse(obj[u'odata.nextLink']).query)['$skiptoken'][0]
+            sys.stdout.write(
+                'If you want to get a next page, '
+                'you can specify following the skiptoken flag.\n'
+                '"%s"\n\n'
+                'NOTE: You must quote it with double quotes characters.\n'
+                '      This means `set --skiptoken="X\'xxx\'"`\n'
+                % (skiptoken,))
 
     def _get_token(self):
         body = urlencode({
