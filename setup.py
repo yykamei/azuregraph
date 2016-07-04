@@ -16,9 +16,6 @@ setup(
     scripts=[
         'azuregraph-tool'
     ],
-    install_requires=[
-        'six==1.10.0',
-    ],
     long_description=long_description,
     classifiers=[
         "Programming Language :: Python",

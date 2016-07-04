@@ -4,17 +4,28 @@
 
 import argparse
 import json
-import six
 import sys
-from six.moves import configparser
-from six.moves.urllib.parse import urlencode, quote
-from six.moves.urllib.request import Request, urlopen
-from six.moves.urllib.error import URLError
+try:
+    from configparser import ConfigParser
+except ImportError:
+    from ConfigParser import ConfigParser
+try:
+    from urllib.parse import urlencode, quote
+except ImportError:
+    from urllib import urlencode, quote
+try:
+    from urllib.request import Request, urlopen
+except ImportError:
+    from urllib2 import Request, urlopen
+try:
+    from urllib.error import URLError
+except ImportError:
+    from urllib2 import URLError
 
 
 class AzureConnector(object):
     def __init__(self, fp):
-        conf = configparser.ConfigParser()
+        conf = ConfigParser()
         conf.readfp(fp)
         self.tenant_id = conf.get('azure', 'tenant_id')
         self.client_id = conf.get('azure', 'client_id')
@@ -38,10 +49,10 @@ class AzureConnector(object):
             response = urlopen(request)
         except URLError as e:
             obj = json.loads(e.read().decode('utf-8'))  # application/json; charset=utf-8
-            six.print_(json.dumps(obj, indent=2), file=sys.stderr)
+            sys.stderr.write('%s\n' % (json.dumps(obj, indent=2),))
             sys.exit(1)
         obj = json.loads(response.read().decode('utf-8'))  # charset=utf-8
-        six.print_(json.dumps(obj, indent=2, ensure_ascii=False))
+        sys.stdout.write('%s\n' % (json.dumps(obj, indent=2, ensure_ascii=False),))
 
     def list(self,
              resource_path,
@@ -78,11 +89,12 @@ class AzureConnector(object):
             response = urlopen(request)
         except URLError as e:
             obj = json.loads(e.read().decode('utf-8'))  # application/json; charset=utf-8
-            six.print_(json.dumps(obj, indent=2), file=sys.stderr)
+            sys.stderr.write('%s\n' % (json.dumps(obj, indent=2),))
             sys.exit(1)
         obj = json.loads(response.read().decode('utf-8'))  # charset=utf-8
         # obj has 'value' key
-        six.print_(json.dumps(obj['value'], indent=2, ensure_ascii=False))
+        # FIXME: skiptoken
+        sys.stdout.write('%s\n' % (json.dumps(obj['value'], indent=2, ensure_ascii=False),))
 
     def _get_token(self):
         body = urlencode({
