@@ -14,7 +14,7 @@ setup(
     author="Yutaka Kamei",
     packages=find_packages(),
     scripts=[
-        'azuregraph.py'
+        'azuregraph-tool'
     ],
     install_requires=[
         'six==1.10.0',
