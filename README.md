@@ -1,7 +1,9 @@
 # Azure AD Graph API Tool
 
-azuregraph-tool dispatches Azure AD Graph API.
+azuregraph-tool dispatches [Azure AD Graph API][azure_ad_graph_api].
 This supports api-version *1.6*, and only GET APIs are supported.
+
+[azure_ad_graph_api]: https://azure.microsoft.com/en-us/documentation/articles/active-directory-graph-api/
 
 ## Installation
 
