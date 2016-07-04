@@ -5,7 +5,7 @@ This supports api-version *1.6*, and only GET APIs are supported.
 
 ## Installation
 
-    $ git clone https://github.com/yykamei/azuregraph /path/to/azuregraph
+    $ git clone https://github.com/yykamei/azuregraph-tool /path/to/azuregraph-tool
 
 ## Preparation
 
@@ -27,4 +27,4 @@ NOTE: You should set appropriate file permission because this file has credentia
 Then, you can dispatch Azure Graph API request.
 Following command means "Get users".
 
-    $ /path/to/azuregraph/azuregraph-tool -I azure.info list users
+    $ /path/to/azuregraph-tool/azuregraph-tool -I azure.info list users
