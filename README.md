@@ -16,7 +16,7 @@ This file is named *azure.info* .
 
     [azure]
     tenant_id = example.com
-    client_id = c80ad3fc-2069-4bc0-afce-7e379b8d4839
+    client_id = xxx
     client_secret = xxx
 
 NOTE: You should set appropriate file permission because this file has credentials.
