@@ -10,7 +10,7 @@ try:  # Python 3
     from urllib.parse import urlparse, parse_qs, urlencode, quote
     from urllib.request import Request, urlopen
     from urllib.error import URLError
-except ImportError:  # Python 3
+except ImportError:  # Python 2
     from ConfigParser import ConfigParser
     from urllib import urlencode, quote
     from urlparse import urlparse, parse_qs
